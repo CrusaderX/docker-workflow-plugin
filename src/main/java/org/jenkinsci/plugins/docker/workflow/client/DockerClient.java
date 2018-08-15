@@ -134,28 +134,6 @@ public class DockerClient {
         }
     }
 
-    public List<String> listProcess(@Nonnull EnvVars launchEnv, @Nonnull String containerId) throws IOException, InterruptedException {
-        LaunchResult result = launch(launchEnv, false, "top", containerId, "-eo", "pid,comm");
-        if (result.getStatus() != 0) {
-            throw new IOException(String.format("Failed to run top '%s'. Error: %s", containerId, result.getErr()));
-        }
-        List<String> processes = new ArrayList<>();
-        try (Reader r = new StringReader(result.getOut());
-             BufferedReader in = new BufferedReader(r)) {
-            String line;
-            in.readLine(); // ps header
-            while ((line = in.readLine()) != null) {
-                final StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
-                if (stringTokenizer.countTokens() < 2) {
-                    throw new IOException("Unexpected `docker top` output : "+line);
-                }
-                stringTokenizer.nextToken(); // PID
-                processes.add(stringTokenizer.nextToken()); // COMMAND
-            }
-        }
-        return processes;
-    }
-
     /**
      * Stop a container.
      * 
@@ -166,7 +144,7 @@ public class DockerClient {
      * @param containerId The container ID.
      */
     public void stop(@Nonnull EnvVars launchEnv, @Nonnull String containerId) throws IOException, InterruptedException {
-        LaunchResult result = launch(launchEnv, false, "stop", "--time=1", containerId);
+        LaunchResult result = launch(launchEnv, false, "stop", "--time=10", containerId);
         if (result.getStatus() != 0) {
             throw new IOException(String.format("Failed to kill container '%s'.", containerId));
         }
