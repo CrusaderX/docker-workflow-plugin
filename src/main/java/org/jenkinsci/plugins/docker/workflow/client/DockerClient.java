@@ -144,10 +144,7 @@ public class DockerClient {
      * @param containerId The container ID.
      */
     public void stop(@Nonnull EnvVars launchEnv, @Nonnull String containerId) throws IOException, InterruptedException {
-        LaunchResult result = launch(launchEnv, false, "stop", "--time=10", containerId);
-        if (result.getStatus() != 0) {
-            throw new IOException(String.format("Failed to kill container '%s'.", containerId));
-        }
+        launch(launchEnv, false, "stop", "--time=1", containerId);
         rm(launchEnv, containerId);
     }
 
@@ -158,11 +155,7 @@ public class DockerClient {
      * @param containerId The container ID.
      */
     public void rm(@Nonnull EnvVars launchEnv, @Nonnull String containerId) throws IOException, InterruptedException {
-        LaunchResult result;
-        result = launch(launchEnv, false, "rm", "-f", containerId);
-        if (result.getStatus() != 0) {
-            throw new IOException(String.format("Failed to rm container '%s'.", containerId));
-        }
+        launch(launchEnv, false, "rm", "-f", containerId);
     }
 
     /**

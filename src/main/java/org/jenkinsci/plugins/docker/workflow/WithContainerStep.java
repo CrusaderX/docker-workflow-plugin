@@ -176,7 +176,6 @@ public class WithContainerStep extends AbstractStepImpl {
                     }
                 }
             } else {
-                listener.getLogger().println(node.getDisplayName() + " does not seem to be running inside a container");
                 volumes.put(ws, ws);
                 volumes.put(tmp, tmp);
             }
@@ -284,9 +283,6 @@ public class WithContainerStep extends AbstractStepImpl {
                 @Override public void kill(Map<String,String> modelEnvVars) throws IOException, InterruptedException {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     String executable = getExecutable();
-                    if (getInner().launch().cmds(executable, "exec", container, "ps", "-A", "-o", "pid,command", "e").stdout(baos).quiet(true).start().joinWithTimeout(DockerClient.CLIENT_TIMEOUT, TimeUnit.SECONDS, listener) != 0) {
-                        throw new IOException("failed to run ps");
-                    }
                     List<String> pids = new ArrayList<String>();
                     LINE: for (String line : baos.toString(Charset.defaultCharset().name()).split("\n")) {
                         for (Map.Entry<String,String> entry : modelEnvVars.entrySet()) {
